@@ -18,22 +18,28 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+## NOTE: sorry I didn't have time to modify this as I promised.
+
 """logging service using syslog, informative exception stacktraces.
 
 Quick usage:
-log = log.Log()
+l = log.Log()
 
-log.debug( 'message' )            # general purpose debugging messages
-log.warning( 'message' )          # for warnings
-log.error( 'message' )            # errors (exceptions)
+l.debug( 'message' )            # general purpose debugging messages
+l.warning( 'message' )          # for warnings
+l.error( 'message' )            # errors (exceptions)
 
 NOTE:
 Importing this module also activates the new-style exception traces
 and exception reporting via syslog.
 """
 
-import sys, syslog, traceback, string, os.path, re
+import sys, traceback, string, os.path, re
+import syslog
 import inspect # requires python 2.1!
+
+# List of handlers that will be given a chance to display the trace or log
+handlers = { }
 
 # These are the syslog logging levels in decreasing order of importance
 LOG_EMERG   = syslog.LOG_EMERG;
@@ -206,7 +212,7 @@ def _buildStackTrace(tb = None):
             prettyargs = ''
             
         # Make prettyargs prettier by removing extra verbiage and addresses
-        prettyargs = re.sub( '<(.+?) \w+ at .*?>', extractMatch, prettyargs )
+        prettyargs = re.sub( '<(.+?) at .*?>', extractMatch, prettyargs )
         trace.append( ( i, name,
                         "%s%s at line %d: %s" %
                         (function, prettyargs, line, code) ) )
@@ -224,19 +230,19 @@ def _getName(frame):
 
 
 def test( y ):
-    log = Log()
+    l = Log()
 
     print ">>> Testing Debug Message"
-    log.debug( "Log Debug Message" )
+    l.debug( "Log Debug Message" )
     print ">>> Testing Warning Message"
-    log.warning( "Log Warning Message (following Debug message)" )
+    l.warning( "Log Warning Message" )
     print ">>> Testing Error Message"
-    log.error( "Log Error Message (following Warning message)" )
+    l.error( "Log Error Message" )
     print ">>> Testing exception in try-except block"
     try:
         x = 3 / 0
     except Exception:
-        log.stackTrace("caught exception test")
+        l.stackTrace("caught exception test")
 
     print ">>> Testing uncaught exception in program"
     x = y / 0
