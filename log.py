@@ -144,7 +144,12 @@ def logException( type, text, tb, logTrace = 1 ):
 
     "to be used with sys.excepthook"
 
-    trace = _buildStackTrace(tb)
+    try:
+        #sys.excepthook(type, text, tb) # output old-style traceback if needed
+        trace = _buildStackTrace(tb)
+    finally:
+        del tb
+        
     log = Log(trace[0][1])
 
     if logTrace:
@@ -171,19 +176,21 @@ sys.excepthook = logException
 def _buildStackTrace(tb = None):
     "Builds a nicely formatted stack trace as a list"
 
-    sys.exc_traceback = tb
-    
     trace  = []
     if tb:
-        frameRecords = inspect.trace()
+        frameRecords = inspect.getinnerframes(tb)
     else:
         frameRecords = inspect.stack()[2:] # skip this and its caller
         
     i = len(frameRecords)
 
-    def extractMatch(m):
-        # used in the regular expression below, returns the first () set
-        return '<' + m.group(1) + '>'
+    def formatValue(value):
+        s = repr(value)
+        # Make prettyargs prettier by removing extra verbiage and addresses
+        s = re.sub('<(.+?) at .*?>', lambda m: '<%s>' % m.group(1), s)
+        if len(s) > 512:
+            s = s[:256] + '......' + s[-256:]
+        return '=' + s
     
     for FR in frameRecords:
         i = i - 1
@@ -204,15 +211,12 @@ def _buildStackTrace(tb = None):
         if function != '?':
             ( args, varargs, varkw, locals) = inspect.getargvalues(frame)
             try:
-                prettyargs = inspect.formatargvalues(
-                    args, varargs, varkw, locals )
+                prettyargs = inspect.formatargvalues(args, varargs, varkw, locals, formatvalue=formatValue)
             except:
                 prettyargs = "(?)"
         else:
             prettyargs = ''
             
-        # Make prettyargs prettier by removing extra verbiage and addresses
-        prettyargs = re.sub( '<(.+?) at .*?>', extractMatch, prettyargs )
         trace.append( ( i, name,
                         "%s%s at line %d: %s" %
                         (function, prettyargs, line, code) ) )
