@@ -7,7 +7,7 @@ based on https://packaging.python.org/en/latest/distributing.html
 from setuptools import setup, find_packages
 
 setup(
-    name='python-rich-traceback',
+    name='rich-traceback',
     version='1.0.1b1',
     description='Rich Traceback Logger',
     long_description=('Informative Traceback Logging for Python\n\n'
