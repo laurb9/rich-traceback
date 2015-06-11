@@ -48,10 +48,10 @@ class RichTracebackFormatter(Formatter):
         finally:
             del traceback_obj
 
-        header = "%s: %s (%d frames following)" % (repr(e_type), repr(e_value), len(trace))
+        header = "%s: %s ([%d] frames following)" % (repr(e_type), repr(e_value), len(trace))
 
         trace.reverse()
-        return "\n".join([header] + ["  %s, %s" % line for line in trace])
+        return "\n".join([header] + ["[%d] %s, %s" % line for line in trace])
 
 
     def _format_value(self, value):
@@ -101,6 +101,7 @@ class RichTracebackFormatter(Formatter):
             frames = inspect.stack()[levels:] # skip this and its caller
 
         trace = []
+        frameNo = 0
         for frame, _, line, function, src, pos in frames:
             code = src[pos].strip() if pos >= 0 else '(no source)'
             name = self.get_frame_name(frame)
@@ -112,7 +113,8 @@ class RichTracebackFormatter(Formatter):
             # here we could separate words in "code" and try to match them in
             # frame.f_locals so we can display the variables involved there.
 
-            trace.append((name, "%s%s at line %d: %s" % (function, prettyargs, line, code)))
+            trace.append((frameNo, name, "%s%s at line %d: %s" % (function, prettyargs, line, code)))
+            frameNo += 1
 
         return trace
 

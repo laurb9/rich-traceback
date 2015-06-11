@@ -35,7 +35,7 @@ class LogTest(unittest.TestCase):
 DEBUG root formatter_test.testLogException:28 calling f
 INFO root formatter_test.f:26 executing a/b
 ERROR root formatter_test.testLogException:32 While trying to frobnicate
-<type 'exceptions.ZeroDivisionError'>: ZeroDivisionError('integer division or modulo by zero',) (2 frames following)
-  formatter_test, f(a=5, b=0) at line 27: return a/b
-  formatter_test, testLogException(self=<formatter_test.LogTest testMethod=testLogException>) at line 30: f(5, 0)
+<type 'exceptions.ZeroDivisionError'>: ZeroDivisionError('integer division or modulo by zero',) ([2] frames following)
+[1] formatter_test, f(a=5, b=0) at line 27: return a/b
+[0] formatter_test, testLogException(self=<formatter_test.LogTest testMethod=testLogException>) at line 30: f(5, 0)
 """)
