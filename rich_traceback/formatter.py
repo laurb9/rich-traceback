@@ -14,9 +14,9 @@ import sys
 import os.path
 import inspect
 import re
-import logging
+from logging import Formatter
 
-class RichTracebackFormatter(logging.Formatter):
+class RichTracebackFormatter(Formatter):
     """
     logging.Formatter subclass for outputting "rich tracebacks"
     """
@@ -26,7 +26,7 @@ class RichTracebackFormatter(logging.Formatter):
     maxParamLength = 512   # parameter values longer than this will be chopped in the middle
 
     def __init__(self, fmt=None, datefmt=None):
-        super(RichTracebackFormatter, self).__init__(fmt=fmt, datefmt=datefmt)
+        Formatter.__init__(self, fmt=fmt, datefmt=datefmt)
         self._fmt = fmt or self.DEFAULT_FMT
         self.datefmt = datefmt or self.DEFAULT_DATEFMT
 
@@ -44,7 +44,7 @@ class RichTracebackFormatter(logging.Formatter):
         try:
             trace = self._format_trace(traceback_obj)
         #except:
-        #    return super(logging.Formatter, self).formatException(ei)
+        #    return Formatter.formatException(self, ei)
         finally:
             del traceback_obj
 

@@ -42,7 +42,7 @@ class Log(object):
         con_log.setLevel(logging.DEBUG)
 
         # create syslog handler
-        sys_log = logging.handlers.SysLogHandler()
+        sys_log = logging.handlers.SysLogHandler('/dev/log')
         sys_log.setLevel(logging.WARN)
 
         # create formatter(s) and add to the handlers
@@ -83,7 +83,7 @@ class Log(object):
 
 # Override logging.Formatter class because we don't have a way to set a module default
 # (logging._defaultFormatter is not used everywhere)
-if not RichTracebackFormatter in logging.Formatter.mro():  # pylint: disable=no-member
+if not issubclass(logging.Formatter, RichTracebackFormatter):
     logging.Formatter = RichTracebackFormatter
 
 

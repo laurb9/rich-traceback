@@ -2,14 +2,24 @@
 # Copyright (C)2014 Laurentiu Badea
 #
 """
-Alter global logging module by replacing the Formatter class with RichTracebackFormatter
-Install exception hook that prints out rich traceback.
+Monkey patch Formatter in global logging module with RichTracebackFormatter
+Also install exception hook that prints out rich traceback.
+
+Usage:
+
+  import rich_traceback.enable
+  import logging
+
+  log = logging.getLogger('root')
+  log.warning("message")
+  ...
+
 """
 import sys
 from .formatter import RichTracebackFormatter
 import logging
 
-if not RichTracebackFormatter in logging.Formatter.mro():   # pylint: disable=no-member
+if not issubclass(logging.Formatter, RichTracebackFormatter):
     logging.Formatter = RichTracebackFormatter
 
 # Set up global exception handler as the above function
