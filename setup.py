@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='rich-traceback',
-    version='1.0.1',
+    version='1.0.2',
     description='Rich Traceback Logger',
     long_description=('Informative Traceback Logging for Python\n\n'
                       'Informative stack traces showing method parameters\n'
