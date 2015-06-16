@@ -1,21 +1,45 @@
 Informative Traceback Logging for Python
 ===============================================
 
-* Enable informative stack traces via standard logging module:
+* Enable informative stack traces if you are already using the standard logging module:
 import rich_traceback.enable
 import logging
 
-(that's it, you can use logging as usual, if an exception happens it will be reported via configured root logger)
+That's it, you can use logging as usual, if an exception happens it will be reported via configured root logger. You can also report exceptions via <yourlog>.exception()
+
+* Save this to test.py and execute:
+```
+from rich_traceback.formatter import RichTracebackFormatter
+import logging
+
+logger = logging.getLogger('root')
+console_log = logging.StreamHandler()
+console_log.setFormatter(RichTracebackFormatter())
+logger.addHandler(console_log)
+
+def foo(x=3):
+    if 1.0/x:
+        foo(x-1)
+try:
+    foo()
+except:
+    logger.exception("error running foo")
+```
 
 * Exception traces are generated automatically for uncaught exceptions via an exception hook,
 or can be sent explicitly by calling Log.stackTrace() from inside an exception handler.
 The format is one frame per line, the order is reversed from the usual tracebacks so the
 exception is shown first.
 
+$ python test.py
 ```
-log.py: Exception <type 'exceptions.ZeroDivisionError'>: 'integer division or modulo by zero' (2 stack frames following, innermost [0])
-log.py: [0] log.py, test(y=5) at line 252: x = y / 0
-log.py: [1] log.py, <module>() at line 255: test(5)
+ERROR root test.<module>:15 error running foo
+<type 'exceptions.ZeroDivisionError'>: ZeroDivisionError('float division by zero',) ([5] frames following)
+[4] test.py, foo(x=0) at line 9: if 1.0/x:
+[3] test.py, foo(x=1) at line 10: foo(x-1)
+[2] test.py, foo(x=2) at line 10: foo(x-1)
+[1] test.py, foo(x=3) at line 10: foo(x-1)
+[0] test.py, <module>() at line 13: foo()
 ```
 Syslog traces would get the date and PID as shown below.
 
