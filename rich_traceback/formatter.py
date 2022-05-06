@@ -103,7 +103,7 @@ class RichTracebackFormatter(Formatter):
         trace = []
         frameNo = 0
         for frame, _, line, function, src, pos in frames:
-            code = src[pos].strip() if pos >= 0 else '(no source)'
+            code = src[pos].strip() if pos else '(no source)'
             name = self.get_frame_name(frame)
             if function == '?':
                 prettyargs = ''
